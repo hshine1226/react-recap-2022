@@ -10,10 +10,6 @@ function ToDos() {
     inputRef.current.focus();
   }, []);
 
-  useEffect(() => {
-    console.log(toDos);
-  }, [toDos]);
-
   const onChange = (event) => {
     setTodo(event.target.value);
   };
