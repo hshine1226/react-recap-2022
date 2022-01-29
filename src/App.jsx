@@ -5,7 +5,7 @@ import Home from "./routes/movie/Home";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={"/" || process.env.PUBLIC_URL}>
       <Routes>
         <Route path="/movie/:id" element={<Detail />}></Route>
         <Route path="/movie" element={<Home />}></Route>
