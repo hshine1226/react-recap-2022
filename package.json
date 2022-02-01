@@ -49,6 +49,7 @@
   },
   "homepage": "https://hshine1226.github.io/react-recap-2022",
   "devDependencies": {
+    "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.21"
   }
 }
