@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import {
   Link,
   Route,
@@ -8,6 +9,7 @@ import {
   useParams,
 } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo, fetchCoinTickers } from "../api";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -132,36 +134,34 @@ interface IPriceData {
 }
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
-  const [infoData, setInfoData] = useState<IInfoData>();
-  const [priceData, setPriceData] = useState<IPriceData>();
-  const { coinId } = useParams();
+  const { coinId } = useParams<{ coinId: string }>();
   const state = useLocation().state as ILocationState;
+  console.log("state: ", state);
+
   const priceMatch = useMatch("/:coinId/price");
   const chartMatch = useMatch("/:coinId/chart");
 
-  useEffect(() => {
-    (async () => {
-      const infoData = await (
-        await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)
-      ).json();
-      const priceData = await (
-        await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
-      ).json();
-      setInfoData(infoData);
-      setPriceData(priceData);
-      setLoading(false);
-    })();
-  }, [coinId]);
+  const { isLoading: infoLoading, data: infoData } = useQuery(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: tickerLoading, data: tickerData } = useQuery(
+    ["ticker", coinId],
+    () => fetchCoinTickers(coinId)
+  );
 
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+          {state?.name
+            ? state.name
+            : infoLoading || tickerLoading
+            ? "Loading..."
+            : infoData?.name}
         </Title>
       </Header>
-      {loading ? (
+      {infoLoading || tickerLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -182,12 +182,12 @@ function Coin() {
           <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
-              <span>Total Suply:</span>
-              <span>{priceData?.total_supply}</span>
+              <span>Total Supply:</span>
+              <span>{tickerData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{priceData?.max_supply}</span>
+              <span>{tickerData?.max_supply}</span>
             </OverviewItem>
           </Overview>
 
