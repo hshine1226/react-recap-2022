@@ -42,6 +42,14 @@ function Chart({ coinId }: { coinId: string | undefined }) {
             xaxis: {
               categories: data?.map((priceData) => priceData.time_close),
             },
+            fill: {
+              type: "gradient",
+              gradient: {
+                gradientToColors: ["blue"],
+                stops: [0, 100],
+              },
+              colors: ["red"],
+            },
           }}
         />
       )}
